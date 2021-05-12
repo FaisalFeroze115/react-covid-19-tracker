@@ -2,10 +2,11 @@ import { Card, CardContent, FormControl, MenuItem, Select } from '@material-ui/c
 import './App.css';
 import { useState, useEffect } from 'react'
 import InfoBox from './InfoBox'
-import Map from './Map'
+import MapSection from './MapSection'
 import Table from './Table'
 import LineGraph from './LineGraph'
-import {sortData} from './util'
+import {sortData} from './util';
+import "leaflet/dist/leaflet.css"
 
 function App() {
   
@@ -13,6 +14,9 @@ function App() {
   const [country,setCountry] = useState('WorldWide');
   const [countryInfo,setCountryInfo] = useState({});
   const [tableData,setTableData] = useState([]);
+  const [mapCenter, setMapCenter] = useState({lat: 24.80746, lng: -70.4796});
+  const [mapZoom, setMapZoom] = useState(6);
+  const [mapCountries, setMapCountries] = useState([]);
 
   
 
@@ -28,6 +32,7 @@ function App() {
         ));
         const sortedData = sortData(data);
         setTableData(sortedData);
+        setMapCountries(data);
         setCountries(contries);
       })
 
@@ -43,8 +48,10 @@ function App() {
     then((data) =>{
       setCountry(countryCode);
       setCountryInfo(data);
+      setMapCenter([data.countryInfo.lat, data.countryInfo.long]);
+      setMapZoom(8);
+      console.log(mapCenter);
     })
-
   }
 
   useEffect(()=>{
@@ -88,7 +95,11 @@ function App() {
           <InfoBox title="Death" total={countryInfo.todayDeaths} cases={countryInfo.deaths}/>
         </div>
 
-        <Map/>
+        <MapSection 
+          center={mapCenter} 
+          zoom={mapZoom}
+          countries={mapCountries}
+        />
       </div>
 
       <Card className="app_right">
